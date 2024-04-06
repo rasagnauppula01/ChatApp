@@ -12,15 +12,15 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { AuthContext } from "../context/AuthContext";
-
+import * as Icon from 'react-bootstrap-icons'
 const Search = () => {
   const [username, setUsername] = useState("");
   const [user, setUser] = useState(null);
   const [err, setErr] = useState(false);
+  const [isInputFocused, setIsInputFocused] = useState(false); // State to track input focus
   const { currentUser } = useContext(AuthContext);
 
   const handleSearch = async () => {
-    setErr(false); // Clear previous error
     const q = query(
       collection(db, "users"),
       where("displayName", "==", username)
@@ -31,80 +31,66 @@ const Search = () => {
       querySnapshot.forEach((doc) => {
         setUser(doc.data());
       });
-
-      if (querySnapshot.empty) {
-        setErr(true); // User not found
-      }
-    } catch (error) {
-      console.error("Error searching for user:", error);
-      setErr(true); // Set error state
+    } catch (err) {
+      setErr(true);
     }
   };
 
   const handleKey = (e) => {
-    if (e.code === "Enter") {
-      handleSearch();
-    }
+    e.code === "Enter" && handleSearch();
   };
 
   const handleSelect = async () => {
-    if (!user) return; // Exit if user is not selected
+    //check whether the group(chats in firestore) exists, if not create
     const combinedId =
       currentUser.uid > user.uid
         ? currentUser.uid + user.uid
         : user.uid + currentUser.uid;
-
     try {
-      const chatDoc = doc(db, "chats", combinedId);
-      const chatSnapshot = await getDoc(chatDoc);
+      const res = await getDoc(doc(db, "chats", combinedId));
 
-      if (!chatSnapshot.exists()) {
-        // Create a chat in chats collection
-        await setDoc(chatDoc, { messages: [] });
+      if (!res.exists()) {
+        //create a chat in chats collection
+        await setDoc(doc(db, "chats", combinedId), { messages: [] });
 
-        // Update userChats for current user
+        //create user chats
         await updateDoc(doc(db, "userChats", currentUser.uid), {
-          [combinedId]: {
-            userInfo: {
-              uid: user.uid,
-              displayName: user.displayName,
-              photoURL: user.photoURL,
-            },
-            date: serverTimestamp(),
+          [combinedId + ".userInfo"]: {
+            uid: user.uid,
+            displayName: user.displayName,
+            photoURL: user.photoURL,
           },
+          [combinedId + ".date"]: serverTimestamp(),
         });
 
-        // Update userChats for selected user
         await updateDoc(doc(db, "userChats", user.uid), {
-          [combinedId]: {
-            userInfo: {
-              uid: currentUser.uid,
-              displayName: currentUser.displayName,
-              photoURL: currentUser.photoURL,
-            },
-            date: serverTimestamp(),
+          [combinedId + ".userInfo"]: {
+            uid: currentUser.uid,
+            displayName: currentUser.displayName,
+            photoURL: currentUser.photoURL,
           },
+          [combinedId + ".date"]: serverTimestamp(),
         });
       }
-    } catch (error) {
-      console.error("Error creating chat:", error);
-    } finally {
-      // Reset state after handling
-      setUser(null);
-      setUsername("");
-    }
-  };
+    } catch (err) {}
 
+    setUser(null);
+    setUsername("")
+  };
   return (
     <div className="search">
       <div className="searchForm">
         <input
           type="text"
-          placeholder="Find a user"
+          placeholder="Search or Find a user"
+          onChange={(e) => setUsername(e.target.value)}
           onKeyDown={handleKey}
+          onFocus={() => setIsInputFocused(true)} // Set isInputFocused to true when input is focused
+          onBlur={() => setIsInputFocused(false)} // Set isInputFocused to false when input is blurred
           onChange={(e) => setUsername(e.target.value)}
           value={username}
         />
+        {!isInputFocused && <span><Icon.Search /></span>} {/* Render the search icon only when input is not focused */}
       </div>
       {err && <span>User not found!</span>}
       {user && (

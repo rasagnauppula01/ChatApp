@@ -1,99 +1,3 @@
-// import React, { useContext, useState } from 'react';
-// import Img from "../images/img.png";
-// import Attach from "../images/attach.png";
-// import { AuthContext } from '../context/AuthContext';
-// import { ChatContext } from '../context/ChatContext';
-// import { Timestamp, arrayUnion, doc, serverTimestamp, updateDoc } from 'firebase/firestore';
-// import { db, storage } from '../firebase';
-// import {v4 as uuid} from "uuid";
-// import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
-
-// const Input = () => {
-//   const [text, setText] = useState("");
-//   const [img, setImg] = useState(null);
-//   const { currentUser } = useContext(AuthContext);
-//   const { data } = useContext(ChatContext);
-
-//   const handleSend = async () => {
-//     try {
-//       if (img) {
-//         const storageRef = ref(storage, uuid());
-//         const uploadTask = uploadBytesResumable(storageRef, img);
-
-//         uploadTask.on(
-//           "state_changed",
-//           null,
-//           (error) => {
-//             // Handle upload error
-//           },
-//           () => {
-//             getDownloadURL(uploadTask.snapshot.ref)
-//               .then(async (downloadURL) => {
-//                 await updateChat(downloadURL);
-//               })
-//               .catch((error) => {
-//                 // Handle download URL retrieval error
-//                 console.error("Error getting download URL:", error);
-//               });
-//           }
-//         );
-//       } else {
-//         await updateChat();
-//       }
-//     } catch (error) {
-//       // Handle any other errors
-//       console.error("Error sending message:", error);
-//     }
-//   };
-
-//   const updateChat = async (downloadURL = null) => {
-//     const messageData = {
-//       id: uuid(),
-//       text,
-//       senderId: currentUser.uid,
-//       date: Timestamp.now(),
-//       img: downloadURL,
-//     };
-
-//     await updateDoc(doc(db, "chats", data.chatId), {
-//       messages: arrayUnion(messageData),
-//     });
-
-//     await updateDoc(doc(db, "userChats", currentUser.uid), {
-//       [data.chatId + ".lastMessage"]: {
-//         text,
-//       },
-//       [data.chatId + ".date"]: serverTimestamp(),
-//     });
-
-//     await updateDoc(doc(db, "userChats", data.user.uid), {
-//       [data.chatId + ".lastMessage"]: {
-//         text,
-//       },
-//       [data.chatId + ".date"]: serverTimestamp(),
-//     });
-
-//     setText("");
-//     setImg(null);
-//   };
-
-//   return (
-//     <div className='input'>
-//         <input type='text' placeholder='Type something...' onChange={e=>setText(e.target.value)} onKeyDown={handleKeyDown} value={text}/>
-//         <div className='send'>
-//             <img src={Attach} alt=""/>
-//             <input type="file" style={{display:"none"}} id="file" onChange={e=>setImg(e.target.files[0])}/>
-//             <label htmlFor='file'>
-//                 <img src={Img} alt=""/>
-//             </label>
-//             <button onClick={handleSend}>Send</button>
-//         </div>
-//     </div>
-//   );
-// };
-
-// export default Input;
-
 import React, { useContext, useState } from 'react';
 import Img from "../images/img.png";
 import Attach from "../images/attach.png";
@@ -101,97 +5,130 @@ import { AuthContext } from '../context/AuthContext';
 import { ChatContext } from '../context/ChatContext';
 import { Timestamp, arrayUnion, doc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { db, storage } from '../firebase';
-import {v4 as uuid} from "uuid";
+import { v4 as uuid } from 'uuid';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
+import InputEmoji from "react-input-emoji";
+import * as Icon from 'react-bootstrap-icons';
 
-const Input = () => {
+function Inputpanel() {
+
   const [text, setText] = useState("");
   const [img, setImg] = useState(null);
-  const { currentUser } = useContext(AuthContext);
-  const { data } = useContext(ChatContext);
+  const [imgPreview, setImgPreview] = useState(null);
 
-  const handleKeyDown = (event) => {
-    if (event.key === 'Enter') {
-      handleSend();
-    }
-  };
+  const {currentUser} = useContext(AuthContext);
+  const {data} = useContext(ChatContext);
 
   const handleSend = async () => {
-    try {
-      if (img) {
-        const storageRef = ref(storage, uuid());
-        const uploadTask = uploadBytesResumable(storageRef, img);
-
-        uploadTask.on(
-          "state_changed",
-          null,
-          (error) => {
-            // Handle upload error
-          },
-          () => {
-            getDownloadURL(uploadTask.snapshot.ref)
-              .then(async (downloadURL) => {
-                await updateChat(downloadURL);
-              })
-              .catch((error) => {
-                // Handle download URL retrieval error
-                console.error("Error getting download URL:", error);
-              });
-          }
-        );
-      } else {
-        await updateChat();
-      }
-    } catch (error) {
-      // Handle any other errors
-      console.error("Error sending message:", error);
+    if (!data.chatId) {
+      alert("Please select a user to send the message");
+      return;
     }
-  };
 
-  const updateChat = async (downloadURL = null) => {
-    const messageData = {
-      id: uuid(),
-      text,
-      senderId: currentUser.uid,
-      date: Timestamp.now(),
-      img: downloadURL,
-    };
+    if (img) {
+      const storageRef = ref(storage, uuid());
+      const uploadTask = uploadBytesResumable(storageRef, img);
+      
+      uploadTask.on("error", (error) => {
+        console.error("Upload error:", error);
+      });
 
-    await updateDoc(doc(db, "chats", data.chatId), {
-      messages: arrayUnion(messageData),
-    });
-
-    await updateDoc(doc(db, "userChats", currentUser.uid), {
-      [data.chatId + ".lastMessage"]: {
-        text,
-      },
-      [data.chatId + ".date"]: serverTimestamp(),
-    });
-
-    await updateDoc(doc(db, "userChats", data.user.uid), {
-      [data.chatId + ".lastMessage"]: {
-        text,
-      },
-      [data.chatId + ".date"]: serverTimestamp(),
-    });
+      uploadTask.on("state_changed", (snapshot) => {
+        // You can add progress tracking here if needed
+      }, (error) => {
+        console.error("Upload error:", error);
+      }, async () => {
+        try {
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          await updateDoc(doc(db, "chats", data.chatId), {
+            messages: arrayUnion({
+              id: uuid(),
+              text,
+              senderId: currentUser.uid,
+              date: Timestamp.now(),
+              img: downloadURL,
+            }),
+          });
+          await updateLastMessage();
+        } catch (error) {
+          console.error("Error updating message with image:", error);
+        }
+      });
+    } else {
+      try {
+        await updateDoc(doc(db, "chats", data.chatId), {
+          messages: arrayUnion({
+            id: uuid(),
+            text,
+            senderId: currentUser.uid,
+            date: Timestamp.now(),
+          }),
+        });
+        await updateLastMessage();
+      } catch (error) {
+        console.error("Error updating message without image:", error);
+      }
+    }
 
     setText("");
     setImg(null);
-  };
+    setImgPreview(null);
+  }
+
+  const updateLastMessage = async () => {
+    try {
+      await updateDoc(doc(db, "userChats", currentUser.uid), {
+        [data.chatId + ".lastMessage"]: {
+          text
+        },
+        [data.chatId + ".date"]: serverTimestamp()
+      });
+      await updateDoc(doc(db, "userChats", data.user.uid), {
+        [data.chatId + ".lastMessage"]: {
+          text
+        },
+        [data.chatId + ".date"]: serverTimestamp()
+      });
+    } catch (error) {
+      console.error("Error updating last message:", error);
+    }
+  }
+
+  const handleEnter = (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      handleSend();
+    }
+  }
+
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setImg(file);
+      setImgPreview(URL.createObjectURL(file)); // Display image preview
+    }
+  }
 
   return (
     <div className='input'>
-        <input type='text' placeholder='Type something...' onChange={e=>setText(e.target.value)} onKeyDown={handleKeyDown} value={text}/>
-        <div className='send'>
-            <img src={Attach} alt=""/>
-            <input type="file" style={{display:"none"}} id="file" onChange={e=>setImg(e.target.files[0])}/>
-            <label htmlFor='file'>
-                <img src={Img} alt=""/>
-            </label>
-            <button onClick={handleSend}>Send</button>
-        </div>
+      {imgPreview && <img src={imgPreview} alt="image-preview" className='image-preview' />}
+      <InputEmoji
+        value={text}
+        onChange={setText}
+        cleanOnEnter
+        onKeyDown={handleEnter}
+        placeholder="Type a message..."
+      />
+      <div className='send'>
+        <img src={Attach} />
+        <input type='file' style={{display:"none"}} id='file' onChange={handleImageChange} />
+        <label htmlFor='file'>
+          <img src={Img} alt=''/>
+        </label>
+        <span><Icon.SendFill onClick={handleSend}/></span>
+      </div>
     </div>
-  );
-};
+  )
+}
 
-export default Input;
+export default Inputpanel;

@@ -1,6 +1,47 @@
+// import Home from "./pages/Home";
+// import Login from "./pages/Login";
+// import Register from "./pages/Register";
+// import "./style.scss";
+// import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+// import { useContext } from "react";
+// import { AuthContext } from "./context/AuthContext";
+
+// function App() {
+//   const { currentUser } = useContext(AuthContext);
+
+//   const ProtectedRoute = ({ children }) => {
+//     if (!currentUser) {
+//       return <Navigate to="/login" />;
+//     }
+
+//     return children
+//   };
+
+//   return (
+//     <BrowserRouter>
+//       <Routes>
+//         <Route>
+//           <Route
+//             index
+//             element={
+//               <ProtectedRoute>
+//                 <Home />
+//               </ProtectedRoute>
+//             }
+//           />
+//           <Route path="login" element={<Login />} />
+//           <Route path="register" element={<Register />} />
+//         </Route>
+//       </Routes>
+//     </BrowserRouter>
+//   );
+// }
+
+// export default App;
+
 import Home from "./pages/Home";
 import Login from "./pages/Login";
-import Register from "./pages/Register";
+import Registration from "./pages/Register";
 import "./style.scss";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useContext } from "react";
@@ -14,27 +55,26 @@ function App() {
       return <Navigate to="/login" />;
     }
 
-    return children
+    return children;
   };
 
   return (
     <BrowserRouter>
       <Routes>
-        <Route>
-          <Route
-            index
-            element={
-              <ProtectedRoute>
-                <Home />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="login" element={<Login />} />
-          <Route path="register" element={<Register />} />
-        </Route>
+        <Route
+          index
+          element={
+            <ProtectedRoute>
+              <Home />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="login" element={<Login />} />
+        <Route path="register" element={<Registration />} /> {/* Changed component to Registration */}
       </Routes>
     </BrowserRouter>
   );
 }
 
 export default App;
+

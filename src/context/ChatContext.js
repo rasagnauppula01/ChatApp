@@ -24,7 +24,13 @@ import {
                 ? currentUser.uid + action.payload.uid
                 : action.payload.uid + currentUser.uid,
           };
-  
+          
+          case "CLEAR_CHATS":
+            return {
+              ...state,
+              chatId: "null",
+              user: {},
+            };
         default:
           return state;
       }

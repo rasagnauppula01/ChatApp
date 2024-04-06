@@ -1,46 +1,3 @@
-// import React, { useContext, useEffect, useRef } from "react";
-// import { AuthContext } from "../context/AuthContext";
-// import { ChatContext } from "../context/ChatContext";
-
-// const Message = ({ message }) => {
-//   const { currentUser } = useContext(AuthContext);
-//   const { data } = useContext(ChatContext);
-
-//   const ref = useRef();
-
-//   useEffect(() => {
-//     ref.current?.scrollIntoView({ behavior: "smooth" });
-//   }, [message]);
-
-//   return (
-//     <div
-//       ref={ref}
-//       className={`message ${message.senderId === currentUser.uid && "owner"}`}
-//     >
-//       <div className="messageInfo">
-//         <img
-//           src={
-//             message.senderId === currentUser.uid
-//               ? currentUser.photoURL
-//               : data.user.photoURL
-//           }
-//           alt=""
-//         />
-//         <span>just now</span>
-//       </div>
-//       <div className="messageContent">
-//         <p>{message.text}</p>
-//         {message.img && <img src={message.img} alt="" />}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Message;
-
-
-
-
 import React, { useContext, useEffect, useRef } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { ChatContext } from "../context/ChatContext";
@@ -54,6 +11,16 @@ const Message = ({ message }) => {
 
     useEffect(() => {
         ref.current?.scrollIntoView({ behavior: "smooth" });
+         // Check if the message sender is not the current user and browser supports notifications
+         if (message.senderId !== currentUser.uid && "Notification" in window) {
+            Notification.requestPermission().then(permission => {
+                if (permission === "granted") {
+                    new Notification("New Message Received", {
+                        body: message.text || "New message received", // Display message content if available
+                    });
+                }
+            });
+        }
     }, [message]); // Dependency array should include 'message' not 'message()'
 
     const getMessageSentTime = (timestamp) => {
@@ -74,7 +41,7 @@ const Message = ({ message }) => {
                 <img src={message.senderId === currentUser.uid ? currentUser.photoURL : data.user.photoURL} alt="User Avatar" />
                 <span>{getMessageSentTime(message.date)}</span>
             </div>
-            <div className="messageContent">
+            <div className="messageContent" style={{marginTop: '10px'}}>
                 {message.text && <p>{message.text}</p>}
                 {message.img && <img src={message.img} alt="Message Image" />}
             </div>
