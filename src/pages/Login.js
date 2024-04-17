@@ -4,6 +4,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from '../firebase';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import loginlogo1 from "../images/loginlogo1.png";
 
 const Login = () => {
   const [error, setError] = useState(null);
@@ -32,13 +33,14 @@ const Login = () => {
   return (
     <div className="formContainer">
       <div className="formWrapper">
-        <span className="logo">Let's ChatApp</span>
+        <img src={loginlogo1} height={52} width={130}/>
+        {/* <span className="logo">Let's ChatApp</span> */}
         <span className="title">Login</span>
         <form onSubmit={handleSubmit}>
           <input type="email" placeholder="email" />
           <input type="password" placeholder="password" />
           <button>Sign In</button>
-          {error && <span><h5>Something went wrong</h5></span>}
+          {/* {error && <span><h5>Something went wrong</h5></span>} */}
         </form>
         <p>You don't have an account? <Link to="/register">Register</Link></p>
         <div className="defaultlogin">

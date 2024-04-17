@@ -9,6 +9,7 @@ import { GoogleAuthProvider } from "firebase/auth";
 import firebase from "firebase/app";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import loginlogo1 from "../images/loginlogo1.png";
 
 const Registration = () => {
   const [error, setError] = useState(null);
@@ -80,7 +81,8 @@ const Registration = () => {
   return (
     <div className="formContainer">
       <div className="formWrapper">
-        <span className="logo">Let's ChatApp</span>
+        <img src={loginlogo1} height={52} width={130}/>
+        {/* <span className="logo">Let's ChatApp</span> */}
         <span className="title">Register</span>
         <form onSubmit={handleSubmit}>
           <input type="text" placeholder="display name" />
@@ -92,7 +94,7 @@ const Registration = () => {
             <span>Add an avatar</span>
           </label>
           <button type="submit">Sign up</button>
-          {error && <span><h5>Something went wrong</h5></span>}
+          {/* {error && <span><h5>Something went wrong</h5></span>} */}
         </form>
         <p>You have an account? <Link to="/Login">Login</Link></p>
       </div>

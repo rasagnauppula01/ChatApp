@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
-import Cam from "../images/cam.png";
-import Add from "../images/add.png";
+// import Cam from "../images/cam.png";
+// import Add from "../images/add.png";
 import More from "../images/more.png";
 import Messages from "./Messages";
 import Input from "./Input";
@@ -30,8 +30,8 @@ const Chat = () => {
       {data.user.photoURL && <img src={data.user.photoURL} alt="User" className="userImage" />}
         {data.user?.displayName}</div>
         <div className="chatIcons">
-          <img src={Cam} alt="" />
-          <img src={Add} alt="" />
+          {/* <img src={Cam} alt="" /> */}
+          {/* <img src={Add} alt="" /> */}
           {/* <img src={More} alt=''/> */}
           <Dropdown data-bs-theme="dark">
             <Dropdown.Toggle variant="secondary" id="dropdown-basic">
