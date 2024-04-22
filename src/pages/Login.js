@@ -46,9 +46,9 @@ const Login = () => {
         <div className="defaultlogin">
           <h5>Default Login Details</h5>
           <b><span>Email:</span></b>
-          <span> rasagnauppula@gmail.com</span><br/>
+          <span> rasagnauppula2@gmail.com</span><br/>
           <b><span>Password:</span></b>
-          <span> rasagna123</span>
+          <span> rasagna#2</span>
         </div>
       </div>
       <ToastContainer />

@@ -133,7 +133,7 @@
 
   .container {
     // border: 1px solid white;
-    border-radius: 10px;
+    // border-radius: 10px;
     width: 82%;
     height: 90%;
     display: flex;
@@ -233,7 +233,7 @@
 
       .chats {
         overflow-y: auto;
-        max-height: calc(99% - 100px); /* Set max-height to limit height */
+        max-height: calc(98% - 100px); /* Set max-height to limit height */
 
         &:hover {
           overflow-y: auto;
@@ -465,14 +465,14 @@
     .navbar {
       position: fixed;
       top: 0;
-      width: 100%;
+      width: 84%;
       background-color: #333;
       padding: 10px;
 
       img{
         display: none;
       }
-  }
+    }
 
   .search {
       width: 100%;
@@ -492,7 +492,7 @@
 
   .chats {
       width: 100%;
-      overflow: scroll;
+      // overflow: scroll;
       height: 55px;
   }
   
@@ -509,12 +509,12 @@
 
     .chat {
       width: 100%;
-      overflow: scroll;
+      // overflow: scroll;
     }
 
     .chats {
       width: 100%;
-      overflow: scroll;
+      // overflow: scroll;
       height: 55px;
     }
 

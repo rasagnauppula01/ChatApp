@@ -120,7 +120,7 @@ function Inputpanel() {
         placeholder="Type a message..."
       />
       <div className='send'>
-        <img src={Attach} />
+        {/* <img src={Attach} /> */}
         <input type='file' style={{display:"none"}} id='file' onChange={handleImageChange} />
         <label htmlFor='file'>
           <img src={Img} alt=''/>
